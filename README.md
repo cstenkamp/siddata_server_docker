@@ -8,7 +8,7 @@ We are using Docker & Docker-Compose!
 
 Pycharm:
 * "Add Configuration" -> "+" -> "Docker Compose" -> Add the `docker-compose.yml` as Compose-file
-* After checking out the repo, do this:
+* After checking out the repo (`cd .. && sudo rm -r siddata_server && git clone git@github.  com:virtUOS/siddata_server.git && cd siddata_server && git checkout ci_cd`), do this:
 ```
 cd path/to/repositoryroot
 cp siddata_server/local_settings_default.py siddata_server/local_settings.py
