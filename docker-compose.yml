@@ -1,0 +1,25 @@
+version: "3.8"
+
+#see https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/26
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build:
+      context: .
+      args:
+        - uid=${COMPOSE_UID:-1000}
+        - gid=${COMPOSE_GID:-1000}
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/opt/siddata_backend/:Z
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
