@@ -128,6 +128,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #keep this at the bottom!
 try:
-   from local_settings import *
+   from .local_settings import *
 except ImportError:
     raise Exception("A local_settings.py file is required to run this project")
