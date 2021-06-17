@@ -1,6 +1,6 @@
 data/
-.idea/ 
-settings.py
+.idea/
+#local_settings.py is already listed below
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -131,4 +131,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/siddata_server/settings.py

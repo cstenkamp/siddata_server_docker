@@ -8,4 +8,12 @@ We are using Docker & Docker-Compose!
 
 Pycharm:
 * "Add Configuration" -> "+" -> "Docker Compose" -> Add the `docker-compose.yml` as Compose-file
-* After checking out the repo, run `sudo chown -R $(id -u):$(id -g) data` (only necessary on Linux)
+* After checking out the repo, do this:
+```
+cd path/to/repositoryroot
+cp siddata_server/settings_default.py siddata_server/settings.py
+docker-compose run web python manage.py makemigrations
+sudo chown -R $(id -u):$(id -g) data #only necessary on Linux
+#and then to start:
+sudo docker-compose up
+```
