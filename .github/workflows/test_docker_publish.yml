@@ -38,14 +38,11 @@ jobs:
           pip install -r requirements.txt
       - name: Lint with flake8
         run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings.
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+          python -m pflake8 . --count --statistics --show-source
       - name: Lint with black
-        uses: psf/black@21.5b2
+        uses: psf/black@21.6b0
         with:
-          args: ". --check"
+          args: ". --check --config pyproject.toml"
       - name: Test with pytest
         run: |
           pytest -vv
