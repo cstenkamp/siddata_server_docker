@@ -30,3 +30,6 @@ conda activate siddata_p3f
 pip install -r requirements-dev.txt
 pre-commit install
 ```
+Note that if your code needs to be reformatted, these pre-commit-hooks may change your files on commit. If there
+were any changes by these hooks, the actual commit will be blocked, such that you may have to commit the files a
+second time.

@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
   push:
-    branches: [main, develop]
+    branches: [main, develop, ci_cd]
     tags: [v*]
   pull_request:
     branches: [main, develop]
