@@ -1,3 +1,7 @@
+# this file contains requirements that are relevant for developers working on the code, not necessarily for the code
+# itself to run! In the `requirements.txt` there are supposed to be all requirements that are necessary to be installed
+# inside the docker-container, and here there are all those that are "meta", such as those for linting and testing.
+
 #to use pre-commit, run pre-commit install with existing .pre-commit-config.yaml
 flake8
 pre-commit
