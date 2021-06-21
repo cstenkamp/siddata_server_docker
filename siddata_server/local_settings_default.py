@@ -1,6 +1,6 @@
 import os
 
-ALLOWED_HOSTS = eval(os.getenv("SIDDATA_DJANGO_ALLOWED_HOSTS", "[]"))
+ALLOWED_HOSTS = eval(os.getenv("SIDDATA_ALLOWED_HOSTS", "") or "[]")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = eval(os.getenv("SIDDATA_DJANGO_DEBUG", "True"))
+DEBUG = eval(os.getenv("SIDDATA_DEBUG", "") or "True")

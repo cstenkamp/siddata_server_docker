@@ -23,3 +23,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    environment:
+     - SIDDATA_ALLOWED_HOSTS=$SIDDATA_ALLOWED_HOSTS
+     - SIDDATA_DEBUG=$SIDDATA_DEBUG

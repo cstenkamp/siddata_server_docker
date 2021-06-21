@@ -2,7 +2,7 @@
 The joint project for Individualization of Studies through Digital, Data-Driven Assistants (SIDDATA, www.siddata.de) aims to encourage students  to define their own study goals and to follow them consistently. The data-driven environment will be able to give hints, reminders and recommendations appropriate to the situation, as well as regarding local and remote courses and Open Educational Resources (OER).  This repository contains the code for the backend server which collects, refines and analyses data to generate personalized recommendation.
 
 
-## Contributing
+## Installing
 
 We are using Docker & Docker-Compose!
 
@@ -15,5 +15,18 @@ cp siddata_server/local_settings_default.py siddata_server/local_settings.py
 docker-compose run web python manage.py makemigrations
 sudo chown -R $(id -u):$(id -g) data #only necessary on Linux
 #and then to start:
-sudo docker-compose up
+SIDDATA_ALLOWED_HOSTS='["0.0.0.0"]' docker-compose up
+```
+
+## Contributing
+
+If you want to contribute, you can still run everything inside the docker-container. However, we are using `pre-commit`
+with linting hooks, such as `black` and `flake8`. To set these up for your local development environment, you need
+to install at least the `requirements-dev.txt` outside of any container. For that, you should run
+```
+#activate an environment of your choice, such as conda:
+conda create -n siddata_p3f python=3.9
+conda activate siddata_p3f
+pip install -r requirements-dev.txt
+pre-commit install
 ```

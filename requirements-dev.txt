@@ -1,0 +1,6 @@
+#to use pre-commit, run pre-commit install with existing .pre-commit-config.yaml
+flake8
+pre-commit
+pyproject-flake8
+pytest
+pytest-cov
