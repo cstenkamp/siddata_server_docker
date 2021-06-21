@@ -10,10 +10,18 @@ on:
     branches: [main, develop]
   workflow_dispatch:
     inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning' #TODO actually use log-level, see https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
+                           #TODO create workflow-dispatch that allows to specify WHAT IS RUN (dbify aramark etc!!)
       create_container:
         required: true
         description: 'Create Container'
         default: 'false'
+      command:
+        required: false
+        description: 'Command to execute'
 
 #TODO run tests in built container
 
