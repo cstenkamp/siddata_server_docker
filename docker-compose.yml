@@ -3,6 +3,7 @@ version: "3.8"
 #see https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/26
 services:
   db:
+    container_name: siddata_server_db_1
     image: postgres
     volumes:
       - ./data/db:/var/lib/postgresql/data
@@ -11,6 +12,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   web:
+    container_name: siddata_server_web_1
     build:
       context: .
       args:
