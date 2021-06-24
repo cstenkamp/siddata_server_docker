@@ -57,7 +57,7 @@ jobs:
       - name: Build the stack & Smoketest
         run: |
           docker-compose up -d
-          docker run --network container:siddata_server_web_1 appropriate/curl --retry 10 --retry-connrefused http://0.0.0.0:8000/health_check
+          docker run --network container:siddata_server_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://0.0.0.0:8000/health_check
 
 
   create_container:
