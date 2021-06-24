@@ -31,7 +31,9 @@ services:
 
   web2:
     container_name: webapp-frontend
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile2
     ports:
       - "5000:5000"
   redis:
