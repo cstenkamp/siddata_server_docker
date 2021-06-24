@@ -59,7 +59,7 @@ jobs:
           SIDDATA_ALLOWED_HOSTS='["0.0.0.0"]' docker-compose up -d
           docker ps
           docker network ls
-          docker run --network container:siddata_server_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://0.0.0.0:8000/health_check
+          docker run --network container:siddata_server_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8000/health_check
 
 
   create_container:

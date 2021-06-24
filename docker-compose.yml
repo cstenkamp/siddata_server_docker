@@ -28,3 +28,12 @@ services:
     environment:
      - SIDDATA_ALLOWED_HOSTS=$SIDDATA_ALLOWED_HOSTS
      - SIDDATA_DEBUG=$SIDDATA_DEBUG
+
+  web2:
+    container_name: webapp-frontend
+    build: .
+    ports:
+      - "5000:5000"
+  redis:
+    container_name: redis-backend
+    image: "redis:alpine"
