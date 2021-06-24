@@ -2,7 +2,7 @@ version: "3.8"
 
 #see https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/26
 services:
-  db:
+  sidb:
     container_name: siddata_server_db_1
     image: postgres
     volumes:
@@ -24,18 +24,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - sidb
     environment:
      - SIDDATA_ALLOWED_HOSTS=$SIDDATA_ALLOWED_HOSTS
      - SIDDATA_DEBUG=$SIDDATA_DEBUG
-
-  web2:
-    container_name: webapp-frontend
-    build:
-      context: .
-      dockerfile: Dockerfile2
-    ports:
-      - "5000:5000"
-  redis:
-    container_name: redis-backend
-    image: "redis:alpine"
