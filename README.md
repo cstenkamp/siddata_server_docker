@@ -12,6 +12,7 @@ Pycharm:
 ```
 cd path/to/repositoryroot
 cp siddata_server/local_settings_default.py siddata_server/local_settings.py
+docker-compose build
 docker-compose run web python manage.py makemigrations
 sudo chown -R $(id -u):$(id -g) data #only necessary on Linux
 #and then to start:
