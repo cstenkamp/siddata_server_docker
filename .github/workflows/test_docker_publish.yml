@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Perform steps to set up Backend
         run: |
-          cp .github/workfllows/local_settings_cd.py siddata_server/local_settings.py
+          cp .github/workflows/local_settings_cd.py siddata_server/local_settings.py
       - name: Build the stack & Smoketest
         run: |
           docker-compose up -d
