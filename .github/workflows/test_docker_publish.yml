@@ -61,7 +61,9 @@ jobs:
           docker ps
           docker network ls
           docker run --network container:siddata_server_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8000/health_check
-
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v1
 
   create_container:
     name: Create Docker Container & push
