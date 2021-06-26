@@ -58,16 +58,21 @@ jobs:
       - name: Perform steps to set up Backend
         run: |
           cp .github/workflows/local_settings_cd.py siddata_server/local_settings.py
-      - name: Build the stack & Smoketest
-        run: |
-          docker-compose up -d
-          sleep 10
-          docker ps
-          docker network ls
-          docker run --network container:siddata_server_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8000/health_check
+      - name: Build the Stack
+        run: docker-compose up -d
       - name: Dump docker logs on failure
         if: failure()
         uses: jwalton/gh-docker-logs@v1
+      - name: Smoketest
+        run: docker run --network container:siddata_server_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8000/health_check
+      - name: Health Check
+        run: |
+          health_status=$(docker run --network container:siddata_server_web_1 appropriate/curl -s http://localhost:8000/health_check/?format=json)
+          statuses=$(echo $health_status | tee >(jq ".DatabaseBackend") >(jq ".\"Cache backend: default\"") >(jq ".DefaultFileStorageHealthCheck") >(jq ".MigrationsHealthCheck") >/dev/null)
+          statuses=$(echo $statuses | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+          if [ $statuses != "unavailabletherearemigrationstoapplyworkingworkingunavailabledatabaseerror" ]; then
+            exit 1
+          fi
 
   create_container:
     name: Create Docker Container & push
