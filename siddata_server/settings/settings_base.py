@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,14 +77,15 @@ WSGI_APPLICATION = "siddata_server.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
+        "NAME": "siddata",
+        "USER": "siddata",
+        "PASSWORD": "siddata",
         "HOST": "sidb",
         "PORT": 5432,
     }
 }
-
+if not os.getenv("RUNNING_IN_DOCKER"):
+    DATABASES["default"]["HOST"] = "localhost"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -127,10 +129,3 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# keep this at the bottom!
-try:
-    from .local_settings import *
-except ImportError:
-    raise Exception("A local_settings.py file is required to run this project")

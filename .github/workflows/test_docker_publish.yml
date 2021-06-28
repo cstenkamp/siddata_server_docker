@@ -55,10 +55,9 @@ jobs:
 #    needs: lint
     steps:
       - uses: actions/checkout@v2
-      - name: Perform steps to set up Backend
-        run: |
-          cp .github/workflows/local_settings_cd.py siddata_server/local_settings.py
       - name: Build the Stack
+        env:
+          DJANGO_SETTINGS_MODULE: siddata_server.settings.cd_autotest
         run: docker-compose up -d
       - name: Dump docker logs on failure
         if: failure()

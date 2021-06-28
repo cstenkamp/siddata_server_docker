@@ -8,9 +8,9 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=siddata
+      - POSTGRES_USER=siddata
+      - POSTGRES_PASSWORD=siddata
   web:
     container_name: siddata_server_web_1
     build:
@@ -28,3 +28,4 @@ services:
     environment:
      - SIDDATA_ALLOWED_HOSTS=$SIDDATA_ALLOWED_HOSTS
      - SIDDATA_DEBUG=$SIDDATA_DEBUG
+     - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
