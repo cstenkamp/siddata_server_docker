@@ -2,14 +2,14 @@ version: "3.8"
 
 #see https://docs.docker.com/compose/extends/
 #to create productive env-container, run `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up`
-#run tests: docker-compose -f docker-compose.yml -f docker-compose.prod.yml run web python manage.py test
+#run tests: docker-compose -f docker-compose.yml -f docker-compose.prod.yml run backend python manage.py test
 #TODO: see "Administrative tasks" here: https://docs.docker.com/compose/extends/ -> make backup like this
 
 services:
   backend:
     command: entrypoint_prod.sh
     environment:
-       - DJANGO_SETTINGS_MODULE=settings.production #TODO: use settings.production!!!!
+       - DJANGO_SETTINGS_MODULE=settings.production
     volumes:
       - production_static_data:/vol/web
 
