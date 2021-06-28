@@ -1,0 +1,110 @@
+name: Lint & Smoketest
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [main, master, develop, ci_cd]
+    tags: [v*]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+#    inputs:
+#      create_container:
+#        required: true
+#        description: 'Create Container'
+#        default: 'false'
+
+#TODO run tests in built container
+
+env:
+  IMAGE_NAME: siddata_server
+jobs:
+  lint:
+    runs-on: ${{ matrix.os }}
+    name: CI - Lint, Pytest, Codecov
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.8, 3.9]
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2 # repo now available under $GITHUB_WORKSPACE
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Lint with flake8
+        run: |
+          python -m pflake8 . --count --statistics --show-source
+      - name: Lint with black
+        uses: psf/black@21.6b0
+        with:
+          options: "--check --config pyproject.toml"
+          src: "."
+
+  smoketest:
+    name: Create Docker Container & run Smoke-Test
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Stack
+        env:
+          DJANGO_SETTINGS_MODULE: src.settings.cd_autotest
+        run: docker-compose up -d
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v1
+      - name: Smoketest
+        run: docker run --network container:siddata_server_web_1 appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8000/health_check
+      - name: Health Check
+        run: |
+          health_status=$(docker run --network container:siddata_server_web_1 appropriate/curl -s http://localhost:8000/health_check/?format=json)
+          statuses=$(echo $health_status | tee >(jq ".DatabaseBackend") >(jq ".\"Cache backend: default\"") >(jq ".DefaultFileStorageHealthCheck") >(jq ".MigrationsHealthCheck") >/dev/null)
+          statuses=$(echo $statuses | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+          if [ $statuses != "unavailabletherearemigrationstoapplyworkingworkingunavailabledatabaseerror" ]; then
+            exit 1
+          fi
+
+#  create_container:
+#    name: Create Docker Container & push
+#    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || github.event.inputs.create_container == 'true' }}
+#    needs: smoketest
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Check out the repo
+#        uses: actions/checkout@v2
+#      #https://github.com/docker/build-push-action#usage
+#      #https://github.com/docker/build-push-action/blob/master/docs/advanced/tags-labels.md
+#      - name: Docker meta
+#        id: meta
+#        uses: crazy-max/ghaction-docker-meta@v2
+#        with:
+#          images: ghcr.io/visiolab/data-processing
+#          tags: |
+#            type=ref,event=branch
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v1
+#      - name: Build the stack
+#        run: docker-compose up -d
+#
+#    #https://github.com/peter-evans/docker-compose-actions-workflow
+#      - name: Login to GitHub Container Registry
+#        uses: docker/login-action@v1
+#        with:
+#          registry: ghcr.io
+#          username: ${{ github.repository_owner }}
+#          password: ${{ secrets.MACHINE_USER_PERSONALACCESSTOKEN }}
+#      - name: Build and push with tag
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          push: true
+#          tags: ${{ steps.meta.outputs.tags }}

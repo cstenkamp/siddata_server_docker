@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # see https://docs.docker.com/samples/django/
-FROM python:3.9-buster
+FROM python:3.9-slim-buster
 
 ARG uid
 ARG gid

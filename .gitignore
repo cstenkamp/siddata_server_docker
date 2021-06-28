@@ -1,6 +1,6 @@
 data/
 .idea/
-#local_settings.py is already listed below
+health_check_storage_test
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
