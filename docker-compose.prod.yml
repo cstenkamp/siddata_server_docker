@@ -1,7 +1,7 @@
 version: "3.8"
 
 #see https://docs.docker.com/compose/extends/
-#to create productive env-container, run `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up`
+#to create & run productive env-container, run `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up`
 #run tests: docker-compose -f docker-compose.yml -f docker-compose.prod.yml run backend python manage.py test
 #TODO: see "Administrative tasks" here: https://docs.docker.com/compose/extends/ -> make backup like this
 
