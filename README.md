@@ -47,6 +47,7 @@ Alternatively, if you're using PyCharm, you can also let Pycharm handle the cont
 If you don't want to run everything in docker, you can still set up everything manually. For that, make sure you have conda installed:
 
 * TODO you also have to install postgres etc!
+
 #### Windows
 
 * TODO

@@ -26,4 +26,8 @@ second time.
 
 ## Further code requirements
 
-* Every import of project-files should start at `src`, eg. `from src.backend.utils.log_utils import logger`.
+* Every import of project-files must start after `src`, eg. `from backend.utils.log_utils import logger`.
+
+## Misc
+
+* For everything to work nicely in Pycharm, right-click on the `src`-dir and select "mark as -> sources"

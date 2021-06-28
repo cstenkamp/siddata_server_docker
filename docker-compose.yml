@@ -11,21 +11,22 @@ services:
       - POSTGRES_DB=siddata
       - POSTGRES_USER=siddata
       - POSTGRES_PASSWORD=siddata
-  web:
+  backend:
     container_name: siddata_server_web_1
     build:
       context: .
       args:
         - uid=${COMPOSE_UID:-1000}
         - gid=${COMPOSE_GID:-1000}
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/opt/siddata_backend/:Z
+#    volumes:
+#      - .:/opt/siddata_backend/:Z
     ports:
       - "8000:8000"
     depends_on:
       - sidb
     environment:
-     - SIDDATA_ALLOWED_HOSTS=$SIDDATA_ALLOWED_HOSTS
+     - SIDDATA_ALLOWED_HOSTS=$SIDDATA_ALLOWED_HOSTS #to allow to pass these as env-args
      - SIDDATA_DEBUG=$SIDDATA_DEBUG
-     - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-src.settings.development}
+     - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-settings.development}
+    restart: always
+    command: entrypoint_dev.sh

@@ -1,4 +1,4 @@
-from src.settings.settings_base import *
+from settings.settings_base import *
 
 ALLOWED_HOSTS = ["0.0.0.0"]
 DEBUG = False

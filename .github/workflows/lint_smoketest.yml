@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build the Stack
         env:
-          DJANGO_SETTINGS_MODULE: src.settings.cd_autotest
+          DJANGO_SETTINGS_MODULE: settings.cd_autotest
         run: docker-compose up -d
       - name: Dump docker logs on failure
         if: failure()
@@ -69,7 +69,7 @@ jobs:
           health_status=$(docker run --network container:siddata_server_web_1 appropriate/curl -s http://localhost:8000/health_check/?format=json)
           statuses=$(echo $health_status | tee >(jq ".DatabaseBackend") >(jq ".\"Cache backend: default\"") >(jq ".DefaultFileStorageHealthCheck") >(jq ".MigrationsHealthCheck") >/dev/null)
           statuses=$(echo $statuses | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]')
-          if [ $statuses != "unavailabletherearemigrationstoapplyworkingworkingunavailabledatabaseerror" ]; then
+          if [ $statuses != "workingworkingworkingworking" ]; then
             exit 1
           fi
 

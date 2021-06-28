@@ -1,6 +1,6 @@
 import os
 
-from src.settings.settings_base import *
+from settings.settings_base import *
 
 ALLOWED_HOSTS = eval(os.getenv("SIDDATA_ALLOWED_HOSTS", "") or "[]")
 

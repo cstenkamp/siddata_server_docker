@@ -1,6 +1,8 @@
 data/
 .idea/
 health_check_storage_test
+**/collected_static/
+**/media/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
