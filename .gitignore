@@ -3,6 +3,9 @@ data/
 health_check_storage_test
 **/collected_static/
 **/media/
+**/*.env
+**/*.env.*
+**/.env.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

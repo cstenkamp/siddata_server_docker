@@ -8,6 +8,8 @@ ARG CODEDIR=/opt/siddata_backend/
 
 #setup basic stuff
 
+RUN echo $ALLOWED_HOSTS
+
 RUN apt-get update \
     && apt-get install -y bash git vim curl zsh htop tmux unzip gcc libc-dev\
     && apt-get clean -y \
@@ -21,8 +23,8 @@ RUN ln -sf /usr/bin/pip3 /usr/bin/pip
 #copy and install our code and set env-vars
 
 WORKDIR ${CODEDIR}
-COPY ./src ${CODEDIR}
-COPY ./scripts /scripts
+COPY src ${CODEDIR}
+COPY docker/scripts /scripts
 RUN chmod +x /scripts/*
 
 ENV PYTHONPATH=${WORKDIR}

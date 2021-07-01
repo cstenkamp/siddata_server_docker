@@ -1,9 +1,0 @@
-import os
-
-from settings.settings_base import *
-from settings.settings_base import BASE_DIR
-
-ALLOWED_HOSTS = eval(os.getenv("SIDDATA_ALLOWED_HOSTS", "") or "[]")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = eval(os.getenv("SIDDATA_DEBUG", "") or "True")

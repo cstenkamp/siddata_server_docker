@@ -2,3 +2,6 @@
 .idea/
 health_check_storage_test/
 .pytest_cache/
+**/*.env
+**/*.env.*
+**/.env.*

@@ -35,7 +35,7 @@ sudo apt-get install git -y
 
 ### Set up this project
 
-Once you have docker installed, you should be able to open a terminal in the root of this project and simply run
+Once you have docker installed, you should be able to open a terminal in the `/docker`-directory of this project and simply run
 ```
 docker-compose up
 ```
@@ -85,3 +85,16 @@ pre-commit install
 Note that if your code needs to be reformatted, these pre-commit-hooks may change your files on commit. If there
 were any changes by these hooks, the actual commit will be blocked, such that you may have to commit the files a
 second time.
+
+
+## Running productively
+
+To run productively, you don't need anything installed on the machine you're using except docker and docker-compose. Create an environment-file `settings_prod.env` with the following keys:
+```
+ALLOWED_HOSTS=...
+```
+
+and then simply run
+```
+docker-compose --env-file ../settings_prod.env -f docker-compose.yml -f docker-compose.prod.yml up --build
+```
