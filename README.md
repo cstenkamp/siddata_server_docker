@@ -42,6 +42,19 @@ docker-compose up
 
 Alternatively, if you're using PyCharm, you can also let Pycharm handle the container: For that, click on the run-dropdown menu at the top right -> "Edit Configuration" -> "Add Configuration" -> "+" -> "Docker Compose" -> Add the `docker-compose.yml` as Compose-file
 
+If you changed anything about the containers, make sure to delete them before re-running `docker-compose up` using
+```
+docker container rm siddata_server_backend_1 siddata_server_db_1 siddata_server_proxy_1
+```
+On Linux, you also may have to remove the intermediate database - for that, run
+```
+sudo rm -rf data/db
+```
+So the 1-command-version to restart:
+```
+docker container rm siddata_server_backend_1 siddata_server_db_1 siddata_server_proxy_1 && sudo rm -rf ./data/db && docker-compose --env-file ./settings_prod.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up --build
+```
+
 ### Set up manually
 
 If you don't want to run everything in docker, you can still set up everything manually. For that, make sure you have conda installed:
@@ -54,7 +67,7 @@ If you don't want to run everything in docker, you can still set up everything m
 
 #### Linux
 
-Run this:
+Run this to install Miniconda:
 ```
 cd ~ && wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && chmod +x Miniconda3-latest-Linux-x86_64.sh && ./Miniconda3-latest-Linux-x86_64.sh -b -p $PWD/conda && eval "$($PWD/conda/bin/conda shell.bash hook)" && SHELLNAME=$(/bin/ps -p $$ | grep -oE '[^ ]+$' | tail -1) && conda init $SHELLNAME && rm Miniconda3-latest-Linux-x86_64.sh && cd -
 ```
@@ -67,7 +80,16 @@ conda create -n siddata_p3f python=3.9
 conda activate siddata_p3f
 pip install -r requirements.txt
 ```
+then, to run the backend, you can either run
+```
+python path/to/manage.py runserver 0.0.0.0
+```
 
+or you can run the same script that the container runs, which automatically migrates etc before running the server:
+```
+cd src
+../docker/scripts/entrypoint_dev.sh
+```
 
 ## Contributing
 
@@ -94,7 +116,7 @@ To run productively, you don't need anything installed on the machine you're usi
 ALLOWED_HOSTS=...
 ```
 
-and then simply run
+and then simply run, from the base of this repo
 ```
-docker-compose --env-file ../settings_prod.env -f docker-compose.yml -f docker-compose.prod.yml up --build
+docker-compose --env-file ./settings_prod.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up --build
 ```

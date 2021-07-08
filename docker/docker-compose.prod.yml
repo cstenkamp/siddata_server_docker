@@ -15,6 +15,7 @@ services:
       - production_static_data:/vol/web
 
   proxy:
+    container_name: siddata_server_proxy_1
     build:
       context: proxy
     volumes:
