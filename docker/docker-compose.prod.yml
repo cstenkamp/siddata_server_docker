@@ -1,0 +1,30 @@
+version: "3.8"
+
+#see https://docs.docker.com/compose/extends/
+#to create & run productive env-container, run `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up`
+#run tests: docker-compose -f docker-compose.yml -f docker-compose.prod.yml run backend python manage.py test
+#TODO: see "Administrative tasks" here: https://docs.docker.com/compose/extends/ -> make backup like this
+
+services:
+  backend:
+    command: entrypoint_prod.sh
+    environment:
+       - DJANGO_SETTINGS_MODULE=settings.production
+       - ALLOWED_HOSTS=$ALLOWED_HOSTS
+    volumes:
+      - production_static_data:/vol/web
+
+  proxy:
+    container_name: siddata_server_proxy_1
+    build:
+      context: proxy
+    volumes:
+      - production_static_data:/vol/static
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  production_static_data:
