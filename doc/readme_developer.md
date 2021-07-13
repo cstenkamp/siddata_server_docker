@@ -31,3 +31,4 @@ second time.
 ## Misc
 
 * For everything to work nicely in Pycharm, right-click on the `src`-dir and select "mark as -> sources"
+* If you import settings, always import them as `from django.conf import settings`
