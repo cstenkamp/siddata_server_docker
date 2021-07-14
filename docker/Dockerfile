@@ -55,6 +55,8 @@ RUN chown -R developer:developer /vol
 RUN chmod -R 755 /vol/web
 RUN chown -R developer:developer ${CODEDIR}
 RUN chmod -R 755 ${CODEDIR}
+RUN mkdir /opt/data
+RUN chown -R developer:developer /opt/data
 
 USER developer
 ENV HOME=/home/developer
