@@ -130,3 +130,9 @@ MEDIA_URL = "/static/media/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+################### CUSTOM STUFF FOR ALL KINDS OF SETTINGS #############################
+TF_SERVING_HOST = "tf_serving" if os.getenv("RUNNING_IN_DOCKER") else "localhost"
+
+TF_SERVING_BASE_URL = f"http://{TF_SERVING_HOST}:8501/v1/models/"

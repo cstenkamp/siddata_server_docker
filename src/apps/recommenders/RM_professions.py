@@ -32,8 +32,9 @@ class BertPredictor:
     top_n = 1
 
     def __init__(self):
-        self.file_path = join(settings.BASE_DIR, "data", "Sidbert")
-        self.classes = self._load_classes_from_tsv(join(self.file_path, "bert_data", "classes.tsv"))
+        self.model_url = settings.TF_SERVING_BASE_URL + "rm_professions:predict"
+        self.file_path = join(settings.BASE_DIR, "data", "RM_professions")
+        self.classes = self._load_classes_from_tsv(join(self.file_path, "classes.tsv"))
         # create label lookup table for label assignment from last classification layer
         self.sparse_label_codes = self._create_sparse_label_lookup()
         self.tokenizer = transformers.BertTokenizerFast.from_pretrained("bert-base-multilingual-cased")
@@ -101,9 +102,8 @@ class BertPredictor:
         return label_probability_assoc
 
     def predict(self, input):
-        model_url = "http://localhost:8501/v1/models/rm_professions:predict"
         input = self.preprocess(input)
-        output = self.call_model(model_url, input)
+        output = self.call_model(self.model_url, input)
         output = self.postprocess(output)
         return output
 
@@ -228,13 +228,23 @@ class BertBackbone:
 
 
 if __name__ == "__main__":
+    # The way it's done here is only for testing/debugging, in production (and also if you're not explicitly testing
+    # tf-models), there is a docker-container instead!!
     import os
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.development")
+    from contextlib import nullcontext
+
+    from apps.backend.util.tf_model_server import TFModelServer
+
     goal = "Machine Learning"
+    with (
+        TFModelServer(8501, "rm_professions", model_base_path=settings.BASE_DIR / "data" / "RM_professions")
+        if not os.getenv("RUNNING_IN_DOCKER")
+        else nullcontext()
+    ):
+        predictor = BertPredictor()
+        print(predictor.predict(goal))
 
-    predictor = BertPredictor()
-    print(predictor.predict(goal))
-
-    backbone = BertBackbone()
-    backbone.fetch_resources_sidbert(goal, None)
+        backbone = BertBackbone()
+        backbone.fetch_resources_sidbert(goal, None)

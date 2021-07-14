@@ -23,11 +23,11 @@ RUN ln -sf /usr/bin/pip3 /usr/bin/pip
 #copy and install our code and set env-vars
 
 WORKDIR ${CODEDIR}
-COPY src ${CODEDIR}
+#COPY src ${CODEDIR}
 COPY docker/scripts /scripts
 RUN chmod +x /scripts/*
 
-ENV PYTHONPATH=${WORKDIR}
+ENV PYTHONPATH=${CODEDIR}
 ENV RUNNING_IN_DOCKER=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -57,6 +57,8 @@ RUN chown -R developer:developer ${CODEDIR}
 RUN chmod -R 755 ${CODEDIR}
 RUN mkdir /opt/data
 RUN chown -R developer:developer /opt/data
+RUN mkdir /opt/django_data
+RUN chown -R developer:developer /opt/django_data
 
 USER developer
 ENV HOME=/home/developer

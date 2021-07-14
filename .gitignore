@@ -1,4 +1,5 @@
 data/
+django_data/
 .idea/
 health_check_storage_test
 **/collected_static/

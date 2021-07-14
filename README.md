@@ -120,3 +120,5 @@ and then simply run, from the base of this repo
 ```
 docker-compose --env-file ./settings_prod.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up --build
 ```
+
+TODO update Readme: Linux-users should use `docker_run_linux.sh`

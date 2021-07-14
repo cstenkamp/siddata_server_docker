@@ -26,7 +26,7 @@ second time.
 
 ## Further code requirements
 
-* Every import of project-files must start after `src`, eg. `from backend.utils.log_utils import logger`.
+* Every import of project-files must start after `src`, eg. `from apps.backend.utils.log_utils import logger`.
 
 ## Misc
 
