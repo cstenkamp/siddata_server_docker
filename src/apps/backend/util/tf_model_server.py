@@ -73,7 +73,6 @@ class TFModelServer:
         server.start()
         while self.comqueue.empty():
             sleep(0.1)
-        print()
 
     def kill_server(self):
         self.shouldkill = True
