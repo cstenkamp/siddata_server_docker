@@ -64,8 +64,8 @@ jobs:
       - name: Build the Stack
         env:
           DJANGO_SETTINGS_MODULE: settings.cd_autotest
-          COMPOSE_UID: 121
-          COMPOSE_GID: 1001
+          COMPOSE_UID: 1001
+          COMPOSE_GID: 121
         run: docker-compose -f docker/docker-compose.yml up -d
       - name: Check if it stays active
         run: |
