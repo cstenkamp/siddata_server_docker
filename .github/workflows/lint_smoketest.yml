@@ -4,10 +4,14 @@ on:
   release:
     types: [published]
   push:
-    branches: [main, master, develop, ci_cd]
+    branches:
+      - '**'
+      - '!archive'
     tags: [v*]
   pull_request:
-    branches: [main, master, develop]
+    branches:
+      - '**'
+      - '!archive'
   workflow_dispatch:
 #    inputs:
 #      create_container:
