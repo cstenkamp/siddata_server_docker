@@ -122,3 +122,23 @@ docker-compose --env-file ./settings_prod.env -f docker/docker-compose.yml -f do
 ```
 
 TODO update Readme: Linux-users should use `docker_run_linux.sh`
+
+
+
+
+############# updates
+
+DOCKER-VERSION
+* Windows: just setup the settings_prod.env (for local prod-testing "ALLOWED_HOSTS=localhost" should even be enough), and then run the `docker-compose --env-file ./settings_prod.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up --build` command from the docker-directory, done.
+* Linux: should use `docker_run_linux.sh`
+
+NON-DOCKER (harder! Not recommended!!)
+Windows:
+```
+conda create -n siddata_p3f python=3.9
+conda activate siddata_p3f
+pip install -r requirements-dev.txt
+pre-commit install
+pip install -r requirements.txt
+.\docker\scripts\entrypoint_dev.cmd (or manually migrating and then running manage.py runserver using pycharm)
+```
