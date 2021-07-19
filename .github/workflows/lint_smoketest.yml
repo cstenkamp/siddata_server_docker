@@ -56,17 +56,16 @@ jobs:
   smoketest:
     name: Create Docker Container & run Smoke-Test
     runs-on: ubuntu-latest
-    needs: lint
+#    needs: lint
     steps:
-      - run: |
-          id -g
-          id -u
       - uses: actions/checkout@v2
       - name: Prepare directory
         run: mkdir -p ./django_data/db/data;
       - name: Build the Stack
         env:
           DJANGO_SETTINGS_MODULE: settings.cd_autotest
+          COMPOSE_UID: 121
+          COMPOSE_GID: 1001
         run: docker-compose -f docker/docker-compose.yml up -d
       - name: Check if it stays active
         run: |
