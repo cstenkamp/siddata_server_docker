@@ -47,3 +47,7 @@ Note that if your code needs to be reformatted, these pre-commit-hooks may chang
 
 * For everything to work nicely in Pycharm, right-click on the `src`-dir and select "mark as -> sources"
 * If you import settings, always import them as `from django.conf import settings`
+
+
+
+* TODO: Explain how the settings-directory works
