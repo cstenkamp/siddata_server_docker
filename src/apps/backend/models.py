@@ -1,5 +1,3 @@
-from django.db import models
-
 import datetime
 import logging
 import uuid
@@ -14,11 +12,12 @@ from siddata_server import settings
 
 class Origin(models.Model):
     """Represents a Stud.IP instance from which requests originate."""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=1024, default="default")
     type = models.CharField(max_length=1024, default="default")
     api_endpoint = models.CharField(max_length=1024)
-    api_key = models.CharField(max_length=1024, default='')
+    api_key = models.CharField(max_length=1024, default="")
 
     def __str__(self):
         """String representation of an Origin object."""
@@ -27,6 +26,7 @@ class Origin(models.Model):
 
 class Degree(models.Model):
     """Represents various degrees, such as Bachelor, Master, ..."""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=256)
     description = models.CharField(max_length=1024, null=True)
@@ -39,16 +39,18 @@ class Degree(models.Model):
 
     def serialize(self):
         response_data = {
-            "data": [{
-                "type": "Degree",
-                "id": self.id,
-                "attributes": {
-                    "name": self.name,
-                    "description": self.description,
-                    "origin": self.origin.name,
-                    "origin_id": self.degree_origin_id,
+            "data": [
+                {
+                    "type": "Degree",
+                    "id": self.id,
+                    "attributes": {
+                        "name": self.name,
+                        "description": self.description,
+                        "origin": self.origin.name,
+                        "origin_id": self.degree_origin_id,
+                    },
                 }
-            }]
+            ]
         }
 
         return response_data
@@ -56,9 +58,10 @@ class Degree(models.Model):
 
 class Subject(models.Model):
     """Represents a course of study (subject), like 'Informatik', 'Cognitive Science'.
-       The name field uses the local name at student's origin institution.
-       Subjects are linked via references to official ids from Destatis
-       (https://www.destatis.de/DE/Methoden/Klassifikationen/BildungKultur/StudentenPruefungsstatistik.html)."""
+    The name field uses the local name at student's origin institution.
+    Subjects are linked via references to official ids from Destatis
+    (https://www.destatis.de/DE/Methoden/Klassifikationen/BildungKultur/StudentenPruefungsstatistik.html)."""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=256)
     description = models.CharField(max_length=1024, null=True)
@@ -74,11 +77,12 @@ class Subject(models.Model):
 
 class SiddataUser(models.Model):
     """A user of the Siddata Study Assistant (not a user for the django app frontend)
-        attributes:
-        user_origin_id:  User ID in the origin system (e.g. Stud.IP Uni OS)
-        gender: Gender
+    attributes:
+    user_origin_id:  User ID in the origin system (e.g. Stud.IP Uni OS)
+    gender: Gender
 
-        """
+    """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     origin = models.ForeignKey(Origin, on_delete=models.CASCADE)
     user_origin_id = models.CharField(max_length=256)
@@ -90,96 +94,73 @@ class SiddataUser(models.Model):
         """String representation of a SiddataUser object."""
         return "SiddataUser {} {}".format(self.id, self.origin.name)
 
-    def serialize(self, include=[]):
+    def serialize(self, include=None):  # noqa: C901
         """
         Converts SiddataUser instance to nested structure that can be transformed to JSON. Follows REST API standards at
         https://jsonapi.org.
         :return: data Dictionary with nested data.
         """
+        include = include or []
 
         recommenders = []
         included = []
         userrecommenders = SiddataUserRecommender.objects.filter(user=self).order_by("recommender__order")
         for userrecommender in userrecommenders:
             recommenders.append({"id": userrecommender.id, "type": "Recommender"})
-            if 'recommenders' in include:
+            if "recommenders" in include:
                 r_ser = userrecommender.serialize()
                 for entry in r_ser["data"] + r_ser["included"]:
                     if entry not in included:
                         included.append(entry)
 
         response_data = {
-            "data": [{
-                "type": "SiddataUser",
-                "id": self.id,
-                "attributes": {
-                    "origin": self.origin.name,
-                    "user_origin_id": self.user_origin_id,
-                    "data_donation": self.data_donation,
-                    "gender_brain": self.gender_brain,
-                    "gender_social": self.gender_social,
-                },
-                "relationships": {
-                    "recommenders": {
-                        "data": recommenders
-                    }
+            "data": [
+                {
+                    "type": "SiddataUser",
+                    "id": self.id,
+                    "attributes": {
+                        "origin": self.origin.name,
+                        "user_origin_id": self.user_origin_id,
+                        "data_donation": self.data_donation,
+                        "gender_brain": self.gender_brain,
+                        "gender_social": self.gender_social,
+                    },
+                    "relationships": {"recommenders": {"data": recommenders}},
                 }
-            }],
+            ],
         }
 
-        courses_brain = 'courses_brain' in include
-        courses_social = 'courses_social' in include
+        courses_brain = "courses_brain" in include
+        courses_social = "courses_social" in include
         if courses_brain or courses_social:
             cms = CourseMembership.objects.filter(user=self)
             if courses_brain:
-                response_data['data'][0]['relationships']['courses_brain'] = {
-                    "data": []
-                }
+                response_data["data"][0]["relationships"]["courses_brain"] = {"data": []}
             if courses_social:
-                response_data['data'][0]['relationships']['courses_social'] = {
-                    "data": []
-                }
+                response_data["data"][0]["relationships"]["courses_social"] = {"data": []}
 
             for cm in cms:
-                relationship = {
-                    "type": "StudipCourse",
-                    "id": cm.course.course_origin_id
-                }
+                relationship = {"type": "StudipCourse", "id": cm.course.course_origin_id}
                 if cm.share_brain and courses_brain:
-                    response_data['data'][0]['relationships']['courses_brain']["data"].append(
-                        relationship
-                    )
+                    response_data["data"][0]["relationships"]["courses_brain"]["data"].append(relationship)
                 if cm.share_social and courses_social:
-                    response_data['data'][0]['relationships']['courses_social']["data"].append(
-                        relationship
-                    )
+                    response_data["data"][0]["relationships"]["courses_social"]["data"].append(relationship)
 
-        institutes_brain = 'institutes_brain' in include
-        institutes_social = 'institutes_social' in include
+        institutes_brain = "institutes_brain" in include
+        institutes_social = "institutes_social" in include
         if institutes_brain or institutes_social:
             ims = InstituteMembership.objects.filter(user=self)
             if institutes_brain:
-                response_data['data'][0]['relationships']['institutes_brain'] = {
-                    "data": []
-                }
+                response_data["data"][0]["relationships"]["institutes_brain"] = {"data": []}
             if institutes_social:
-                response_data['data'][0]['relationships']['institutes_social'] = {
-                    "data": []
-                }
+                response_data["data"][0]["relationships"]["institutes_social"] = {"data": []}
 
             for im in ims:
-                relationship = {
-                    "type": "StudipInstitute",
-                    "id": im.institute.institute_origin_id
-                }
+                relationship = {"type": "StudipInstitute", "id": im.institute.institute_origin_id}
                 if im.share_brain and institutes_brain:
-                    response_data['data'][0]['relationships']['institutes_brain']["data"].append(
-                        relationship
-                    )
+                    response_data["data"][0]["relationships"]["institutes_brain"]["data"].append(relationship)
                 if im.share_social and institutes_social:
-                    response_data['data'][0]['relationships']['institutes_social']["data"].append(
-                        relationship
-                    )
+                    response_data["data"][0]["relationships"]["institutes_social"]["data"].append(relationship)
 
         if len(include) > 0:
             response_data["included"] = included
@@ -212,6 +193,7 @@ class UserProperty(models.Model):
     A UserProperty specifies a User. For example: key=age, value=42
     Permissions to use data are also stored here.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(SiddataUser, on_delete=models.CASCADE, default=None)
     key = models.CharField(max_length=256)
@@ -231,6 +213,7 @@ class SiddataUserStudy(models.Model):
         - 2-Fächer-Bachelor Latein, 14. Semester
         - Juristisches Staatsexamen Jura, 1. Semester
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     studycourse_origin_id = models.CharField(max_length=512, null=True)
     user = models.ForeignKey(SiddataUser, on_delete=models.CASCADE)  # references entry in SiddataUser table
@@ -247,29 +230,31 @@ class SiddataUserStudy(models.Model):
     def __str__(self):
         """String representation of a SiddataUserStudy object."""
         if self.subject is not None and self.degree is not None:
-            return "SiddataUserStudy {} {} {} {}".format(self.user.id, self.degree.name, self.subject.name,
-                                                         self.semester)
+            return "SiddataUserStudy {} {} {} {}".format(
+                self.user.id, self.degree.name, self.subject.name, self.semester
+            )
         else:
             return "SiddataUserStudy {} {}".format(self.user.id, self.semester)
 
     def serialize(self):
         response_data = {
-            "data": [{
-                "type": "SiddataUserStudy",
-                "id": self.id,
-                "attributes": {
-                    "studip_id": self.studycourse_origin_id,
-                    "semester": self.semester,
-                    "share_subject_brain": self.share_subject_brain,
-                    "share_subject_social": self.share_subject_social,
-                    "share_degree_brain": self.share_degree_brain,
-                    "share_degree_social": self.share_degree_social,
-                    "share_semester_brain": self.share_semester_brain,
-                    "share_semester_social": self.share_semester_social,
-                },
-                "relationships": {
-                },
-            }],
+            "data": [
+                {
+                    "type": "SiddataUserStudy",
+                    "id": self.id,
+                    "attributes": {
+                        "studip_id": self.studycourse_origin_id,
+                        "semester": self.semester,
+                        "share_subject_brain": self.share_subject_brain,
+                        "share_subject_social": self.share_subject_social,
+                        "share_degree_brain": self.share_degree_brain,
+                        "share_degree_social": self.share_degree_social,
+                        "share_semester_brain": self.share_semester_brain,
+                        "share_semester_social": self.share_semester_social,
+                    },
+                    "relationships": {},
+                }
+            ],
         }
         return response_data
 
@@ -278,14 +263,18 @@ class Recommender(models.Model):
     """
     Represents a recommender
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=1024)
     classname = models.CharField(max_length=256)
     description = models.CharField(max_length=2048, null=True)
     image = models.CharField(max_length=256, null=True)
     order = models.IntegerField(null=True)
-    data_info = models.CharField(max_length=256, default="Die bei der Nutzung enstehenden Daten werden auf dem \
-               Siddata Server gespeichert.")
+    data_info = models.CharField(
+        max_length=256,
+        default="Die bei der Nutzung enstehenden Daten werden auf dem \
+               Siddata Server gespeichert.",
+    )
 
     def __str__(self):
         """String representation of a Recommender object."""
@@ -296,6 +285,7 @@ class SiddataUserRecommender(models.Model):
     """
     Represents the usage of a recommender by a student
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(SiddataUser, on_delete=models.CASCADE)
     recommender = models.ForeignKey(Recommender, on_delete=models.CASCADE)
@@ -325,40 +315,33 @@ class SiddataUserRecommender(models.Model):
                         included.append(entry)
 
         response_data = {
-            "data": [{
-                "type": "Recommender",
-                "id": self.id,
-                "attributes": {
-                    "name": self.recommender.name,
-                    "classname": self.recommender.classname,
-                    "description": self.recommender.description,
-                    "image": "{}{}".format(settings.IMAGE_URL, self.recommender.image),
-                    "order": self.recommender.order,
-                    "enabled": self.enabled,
-                    "data_info": self.recommender.data_info,
-                },
-                "relationships": {
-                    "goals": {
-                        "data": goal_dicts
+            "data": [
+                {
+                    "type": "Recommender",
+                    "id": self.id,
+                    "attributes": {
+                        "name": self.recommender.name,
+                        "classname": self.recommender.classname,
+                        "description": self.recommender.description,
+                        "image": "{}{}".format(settings.IMAGE_URL, self.recommender.image),
+                        "order": self.recommender.order,
+                        "enabled": self.enabled,
+                        "data_info": self.recommender.data_info,
                     },
-                    "activities": {
-                        "data": []
+                    "relationships": {
+                        "goals": {"data": goal_dicts},
+                        "activities": {"data": []},
+                        "students": {"data": [{"type": "SiddataUser", "id": self.user.id}]},
                     },
-                    "students": {
-                        "data": [{
-                            "type": "SiddataUser",
-                            "id": self.user.id
-                        }]
-                    }
                 }
-            }],
+            ],
         }
 
         if include:
             u_ser = self.user.serialize(include=[])["data"][0]
             if u_ser not in included:
                 included.append(u_ser)
-            response_data['included'] = included
+            response_data["included"] = included
 
         return response_data
 
@@ -369,6 +352,7 @@ class Goal(models.Model):
         attributes:
         type: if type is set to "form" all children will be displayed in the frontend with one submit button.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=1024, null=True)
     description = models.TextField(null=True)
@@ -413,42 +397,34 @@ class Goal(models.Model):
                         included.append(entry)
 
         response_data = {
-            "data": [{
-                "type": "Goal",
-                "id": self.id,
-                "attributes": {
-                    "title": self.title,
-                    "description": self.description,
-                    "makedate": self.makedate,
-                    "user": self.userrecommender.user.pk,
-                    "recommender": self.userrecommender.recommender.name,
-                    "order": self.order,
-                    "type": self.type,
-                    "visible": self.visible,
-
-                },
-                "relationships": {
-                    "activities": {
-                        "data": activity_dicts
+            "data": [
+                {
+                    "type": "Goal",
+                    "id": self.id,
+                    "attributes": {
+                        "title": self.title,
+                        "description": self.description,
+                        "makedate": self.makedate,
+                        "user": self.userrecommender.user.pk,
+                        "recommender": self.userrecommender.recommender.name,
+                        "order": self.order,
+                        "type": self.type,
+                        "visible": self.visible,
                     },
-                    "goalproperties": {
-                        "data": goalproperty_dicts
+                    "relationships": {
+                        "activities": {"data": activity_dicts},
+                        "goalproperties": {"data": goalproperty_dicts},
+                        "students": {"data": [{"id": self.userrecommender.user.id, "type": "SiddataUser"}]},
                     },
-                    "students": {
-                        "data": [{
-                            "id": self.userrecommender.user.id,
-                            "type": "SiddataUser"
-                        }]
-                    }
                 }
-            }],
+            ],
         }
 
         if include:
             userrec_ser = self.userrecommender.serialize(include=False)["data"][0]
             if userrec_ser not in included:
                 included.append(userrec_ser)
-            response_data['included'] = included
+            response_data["included"] = included
 
         return response_data
 
@@ -475,6 +451,7 @@ class Goal(models.Model):
 
 class GoalProperty(models.Model):
     """A GoalProperty specifies a goal. For example: key=country, value=england"""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE, default=None)
     key = models.CharField(max_length=256)
@@ -491,25 +468,27 @@ class GoalProperty(models.Model):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "GoalProperty",
-                "id": self.id,
-                "attributes": {
-                    "key": self.key,
-                    "value": self.value,
-                },
-            }],
+            "data": [
+                {
+                    "type": "GoalProperty",
+                    "id": self.id,
+                    "attributes": {
+                        "key": self.key,
+                        "value": self.value,
+                    },
+                }
+            ],
             "included": [],
         }
         return response_data
 
 
 class Category(models.Model):
-    """A category of goals, for instance DDC-codes but also the categories from our goal tagset.
-    """
+    """A category of goals, for instance DDC-codes but also the categories from our goal tagset."""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=1024)
-    super_category = models.ForeignKey('Category', on_delete=models.CASCADE, null=True, blank=True)
+    super_category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         """String representation of a Category object."""
@@ -520,6 +499,7 @@ class GoalCategory(models.Model):
     """Represents one goal categorized by majority vote.
     One goal can have many categories and can only once be categorized by the majority vote.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -533,6 +513,7 @@ class GoalCategory(models.Model):
 
 class EducationalResource(models.Model):
     """Represents an educational resource like books, courses, MOOCs etc."""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ddc_code = models.JSONField(null=True)
     origin = models.ForeignKey(Origin, on_delete=models.CASCADE, related_name="educational_resource_origin", null=True)
@@ -549,7 +530,7 @@ class EducationalResource(models.Model):
     # pdf/video/mooc/etc.
     format = models.JSONField(max_length=1024, null=True)
     language = LanguageField(max_length=1024, null=True)
-    publisher = models.CharField(max_length=1024, null=True)    # keep it None for now, later maybe alias with origin
+    publisher = models.CharField(max_length=1024, null=True)  # keep it None for now, later maybe alias with origin
     relation = models.CharField(max_length=1024, null=True)
     rights = models.CharField(max_length=1024, null=True)
     # URL to original resource
@@ -567,16 +548,18 @@ class EducationalResource(models.Model):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "EducationalResource",
-                "id": self.id,
-                "attributes": {
-                    "title": self.title,
-                    "description": self.description,
-                    "url": self.source,
+            "data": [
+                {
+                    "type": "EducationalResource",
+                    "id": self.id,
+                    "attributes": {
+                        "title": self.title,
+                        "description": self.description,
+                        "url": self.source,
+                    },
                 }
-            }],
-            "included": []
+            ],
+            "included": [],
         }
         return response_data
 
@@ -595,17 +578,19 @@ class InheritingCourse(EducationalResource):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "Course",
-                "id": self.id,
-                "attributes": {
-                    "title": self.title,
-                    "description": self.description,
-                    "url": self.source,
-                    "origin_id": self.course_origin_id
+            "data": [
+                {
+                    "type": "Course",
+                    "id": self.id,
+                    "attributes": {
+                        "title": self.title,
+                        "description": self.description,
+                        "url": self.source,
+                        "origin_id": self.course_origin_id,
+                    },
                 }
-            }],
-            "included": []
+            ],
+            "included": [],
         }
         return response_data
 
@@ -624,22 +609,24 @@ class StudipCourse(InheritingCourse):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "Course",
-                "id": self.id,
-                "attributes": {
-                    "title": self.title,
-                    "description": self.description,
-                    "place": self.place,
-                    "start_time": datetime.datetime.timestamp(self.start_time),
-                    "end_time": datetime.datetime.timestamp(self.end_time),
-                    "start_semester": self.start_semester,
-                    "end_semester": self.end_semester,
-                    "url": self.source,
-                    "studip_id": self.course_origin_id
+            "data": [
+                {
+                    "type": "Course",
+                    "id": self.id,
+                    "attributes": {
+                        "title": self.title,
+                        "description": self.description,
+                        "place": self.place,
+                        "start_time": datetime.datetime.timestamp(self.start_time),
+                        "end_time": datetime.datetime.timestamp(self.end_time),
+                        "start_semester": self.start_semester,
+                        "end_semester": self.end_semester,
+                        "url": self.source,
+                        "studip_id": self.course_origin_id,
+                    },
                 }
-            }],
-            "included": []
+            ],
+            "included": [],
         }
         return response_data
 
@@ -659,20 +646,22 @@ class InheritingEvent(EducationalResource):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "Event",
-                "id": self.id,
-                "attributes": {
-                    "title": self.title,
-                    "description": self.description,
-                    "origin_id": self.event_origin_id,
-                    "type": self.type,
-                    "self": (self.course.id if self.course else self.course),
-                    "url": self.source,
-                    "origin": self.origin.name,
-                    "ddc_code": self.ddc_code
-                },
-            }],
+            "data": [
+                {
+                    "type": "Event",
+                    "id": self.id,
+                    "attributes": {
+                        "title": self.title,
+                        "description": self.description,
+                        "origin_id": self.event_origin_id,
+                        "type": self.type,
+                        "self": (self.course.id if self.course else self.course),
+                        "url": self.source,
+                        "origin": self.origin.name,
+                        "ddc_code": self.ddc_code,
+                    },
+                }
+            ],
             "included": [self.course],
         }
 
@@ -691,23 +680,25 @@ class StudipEvent(InheritingEvent):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "Event",
-                "id": self.id,
-                "attributes": {
-                    "title": self.title,
-                    "description": self.description,
-                    "studip_id": self.event_origin_id,
-                    "start_time": datetime.datetime.timestamp(self.start_time),
-                    "end_time": datetime.datetime.timestamp(self.end_time),
-                    "type": self.type,
-                    "self": (self.course.id if self.course else self.course),
-                    "url": self.source,
-                    "place": self.place,
-                    "origin": self.origin.name,
-                    "ddc_code": self.ddc_code
-                },
-            }],
+            "data": [
+                {
+                    "type": "Event",
+                    "id": self.id,
+                    "attributes": {
+                        "title": self.title,
+                        "description": self.description,
+                        "studip_id": self.event_origin_id,
+                        "start_time": datetime.datetime.timestamp(self.start_time),
+                        "end_time": datetime.datetime.timestamp(self.end_time),
+                        "type": self.type,
+                        "self": (self.course.id if self.course else self.course),
+                        "url": self.source,
+                        "place": self.place,
+                        "origin": self.origin.name,
+                        "ddc_code": self.ddc_code,
+                    },
+                }
+            ],
             "included": [self.course],
         }
 
@@ -728,17 +719,19 @@ class WebResource(EducationalResource):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "Resource",
-                "id": self.id,
-                "attributes": {
-                    "title": self.title,
-                    "description": self.description,
-                    "url": self.source,
-                    "iframe": self.iframe,
-                    "origin": [self.origin.name if self.origin else None],
-                },
-            }],
+            "data": [
+                {
+                    "type": "Resource",
+                    "id": self.id,
+                    "attributes": {
+                        "title": self.title,
+                        "description": self.description,
+                        "url": self.source,
+                        "iframe": self.iframe,
+                        "origin": [self.origin.name if self.origin else None],
+                    },
+                }
+            ],
             "included": [],
         }
         return response_data
@@ -746,6 +739,7 @@ class WebResource(EducationalResource):
 
 class Question(models.Model):
     """Represents a question"""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     question_text = models.TextField()
     answer_type = models.CharField(max_length=1024)
@@ -762,22 +756,25 @@ class Question(models.Model):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "Question",
-                "id": self.id,
-                "attributes": {
-                    "question_text": self.question_text,
-                    "answer_type": self.answer_type,
-                    "selection_answers": self.selection_answers,
+            "data": [
+                {
+                    "type": "Question",
+                    "id": self.id,
+                    "attributes": {
+                        "question_text": self.question_text,
+                        "answer_type": self.answer_type,
+                        "selection_answers": self.selection_answers,
+                    },
                 }
-            }],
-            "included": []
+            ],
+            "included": [],
         }
         return response_data
 
 
 class Person(models.Model):
     """Represents a person"""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.CharField(max_length=256, null=True)
     first_name = models.CharField(max_length=256)
@@ -798,20 +795,22 @@ class Person(models.Model):
         :return: data Dictionary with nested data.
         """
         response_data = {
-            "data": [{
-                "type": "person",
-                "id": self.id,
-                "attributes": {
-                    "image": self.image,
-                    "first_name": self.first_name,
-                    "second_name": self.second_name,
-                    "title": self.title,
-                    "email": self.email,
-                    "role_description": self.role_description,
-                    "url": self.url,
+            "data": [
+                {
+                    "type": "person",
+                    "id": self.id,
+                    "attributes": {
+                        "image": self.image,
+                        "first_name": self.first_name,
+                        "second_name": self.second_name,
+                        "title": self.title,
+                        "email": self.email,
+                        "role_description": self.role_description,
+                        "url": self.url,
+                    },
                 }
-            }],
-            "included": []
+            ],
+            "included": [],
         }
         return response_data
 
@@ -967,46 +966,40 @@ class Activity(models.Model):
             return None
 
         response_data = {
-            "data": [{
-                "type": "Activity",
-                "id": self.id,
-                "attributes": {
-                    "description": self.description,
-                    "type": self.type,
-                    "goal_id": self.goal.pk,
-                    "title": self.title,
-                    "status": self.status,
-                    "answers": self.answers,
-                    "feedback_size": self.feedback_size,
-                    "feedback_value": self.feedback_value,
-                    "feedback_text": self.feedback_text,
-                    "feedback_chdate": self.feedback_chdate,
-                    "notes": self.notes,
-                    "duedate": self.duedate,
-                    "order": self.order,
-                    "chdate": self.chdate,
-                    "mkdate": self.mkdate,
-                    "activation_time": self.activation_time,
-                    "deactivation_time": self.deactivation_time,
-                    "image": "{}{}".format(settings.IMAGE_URL, self.image),
-                    "color_theme": self.color_theme,
-                    "button_text": self.button_text,
-                },
-                "relationships": {
-                    "course": {
-                        "data": [{"id": self.course.id, "type": "Course"}] if self.course else []
+            "data": [
+                {
+                    "type": "Activity",
+                    "id": self.id,
+                    "attributes": {
+                        "description": self.description,
+                        "type": self.type,
+                        "goal_id": self.goal.pk,
+                        "title": self.title,
+                        "status": self.status,
+                        "answers": self.answers,
+                        "feedback_size": self.feedback_size,
+                        "feedback_value": self.feedback_value,
+                        "feedback_text": self.feedback_text,
+                        "feedback_chdate": self.feedback_chdate,
+                        "notes": self.notes,
+                        "duedate": self.duedate,
+                        "order": self.order,
+                        "chdate": self.chdate,
+                        "mkdate": self.mkdate,
+                        "activation_time": self.activation_time,
+                        "deactivation_time": self.deactivation_time,
+                        "image": "{}{}".format(settings.IMAGE_URL, self.image),
+                        "color_theme": self.color_theme,
+                        "button_text": self.button_text,
                     },
-                    "resource": {
-                        "data": [{"id": self.resource.id, "type": "Resource"}] if self.resource else []
+                    "relationships": {
+                        "course": {"data": [{"id": self.course.id, "type": "Course"}] if self.course else []},
+                        "resource": {"data": [{"id": self.resource.id, "type": "Resource"}] if self.resource else []},
+                        "question": {"data": [{"id": self.question.id, "type": "Question"}] if self.question else []},
+                        "event": {"data": [{"id": self.event.id, "type": "Event"}] if self.event else []},
                     },
-                    "question": {
-                        "data": [{"id": self.question.id, "type": "Question"}] if self.question else []
-                    },
-                    "event": {
-                        "data": [{"id": self.event.id, "type": "Event"}] if self.event else []
-                    },
-                },
-            }],
+                }
+            ],
         }
 
         if include:
@@ -1039,7 +1032,7 @@ class Activity(models.Model):
             if user_ser not in included:
                 included.append(user_ser)
 
-            response_data['included'] = included
+            response_data["included"] = included
 
         return response_data
 
@@ -1118,7 +1111,8 @@ class ActivityTemplate(Activity):
 
     template_id = models.CharField(max_length=256, primary_key=True)
     activity_ptr = models.OneToOneField(
-        Activity, on_delete=models.CASCADE,
+        Activity,
+        on_delete=models.CASCADE,
         parent_link=True,
     )
 
@@ -1134,7 +1128,8 @@ class RequestLog(models.Model):
 
 
 class CourseMembership(models.Model):
-    """ Course Enrollment"""
+    """Course Enrollment"""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(SiddataUser, on_delete=models.CASCADE, null=True)
     course = models.ForeignKey(StudipCourse, on_delete=models.CASCADE, null=True)
@@ -1143,7 +1138,8 @@ class CourseMembership(models.Model):
 
 
 class Institute(models.Model):
-    """ Represents University Institutes. """
+    """Represents University Institutes."""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=512)
     url = models.CharField(max_length=512, null=True)
@@ -1152,7 +1148,8 @@ class Institute(models.Model):
 
 
 class InstituteMembership(models.Model):
-    """ Institute affiliation"""
+    """Institute affiliation"""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(SiddataUser, on_delete=models.CASCADE, null=True)
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE, null=True)
