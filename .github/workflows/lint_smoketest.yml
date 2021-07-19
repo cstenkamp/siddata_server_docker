@@ -63,6 +63,9 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: settings.cd_autotest
         run: docker-compose -f docker/docker-compose.yml up -d
+      - run: |
+          sleep 10
+          docker ps
       - name: Dump docker logs on failure
         if: failure()
         uses: jwalton/gh-docker-logs@v1
