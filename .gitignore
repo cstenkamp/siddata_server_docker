@@ -1,6 +1,12 @@
 data/
+django_data/
 .idea/
-#local_settings.py is already listed below
+health_check_storage_test
+**/collected_static/
+**/media/
+**/*.env
+**/*.env.*
+**/.env.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

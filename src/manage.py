@@ -3,10 +3,12 @@
 import os
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
+
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "siddata_server.settings.development")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.development")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

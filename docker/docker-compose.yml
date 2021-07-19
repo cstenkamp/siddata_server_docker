@@ -1,0 +1,56 @@
+version: "3.8"
+
+#see https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/26
+services:
+  sidb:
+    container_name: siddata_server_db_1
+    image: postgres:latest
+    volumes:
+      - ../django_data/db:/var/lib/postgresql/
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=siddata
+      - POSTGRES_USER=siddata
+      - POSTGRES_PASSWORD=siddata
+      - PGDATA=/var/lib/postgresql/data/pgdata #see https://stackoverflow.com/a/61884120/5122790
+
+  pgres_adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  backend:
+    container_name: siddata_server_backend_1
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        - uid=${COMPOSE_UID:-1000}
+        - gid=${COMPOSE_GID:-1000}
+    volumes:
+      - ../src/:/opt/siddata_backend/
+      - ../data/:/opt/data/
+      - ../django_data/:/opt/django_data/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - sidb
+    environment:
+     - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-settings.development}
+    restart: always
+    command: entrypoint_dev.sh
+
+  tf_serving:
+    container_name: siddata_tfserving_1
+    image: tensorflow/serving
+    ports:
+      - "8501:8501"
+      - "8500:8500"
+    depends_on:
+      - backend
+    volumes:
+      - ../data/RM_professions/:/models/rm_professions/
+    environment:
+      - MODEL_NAME=rm_professions

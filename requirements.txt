@@ -1,3 +1,22 @@
+apscheduler
 Django>=3.2,<4.0
+django-apscheduler
+django-cors-headers
+django-extensions
+django-filter
 django-health-check
+django-import-export
+djangorestframework
+markdown
+matplotlib
+nltk
+pandas
+plotly >= 4.14
 psycopg2-binary>=2.8
+requests
+requests-toolbelt
+sickle
+six
+tensorflow >=2.3
+transformers
+vobject
