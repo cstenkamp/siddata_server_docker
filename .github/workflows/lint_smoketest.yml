@@ -58,6 +58,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     steps:
+      - run: |
+          id -g
+          id -u
       - uses: actions/checkout@v2
       - name: Prepare directory
         run: mkdir -p ./django_data/db/data;
