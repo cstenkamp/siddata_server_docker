@@ -4,11 +4,7 @@ version: "3.8"
 services:
   sidb:
     container_name: siddata_server_db_1
-    build:
-      context: db
-      args:
-        - uid=${COMPOSE_UID:-1000}
-        - gid=${COMPOSE_GID:-1000}
+    image: postgres:latest
     volumes:
       - ../django_data/db:/var/lib/postgresql/
     ports:
@@ -18,6 +14,7 @@ services:
       - POSTGRES_USER=siddata
       - POSTGRES_PASSWORD=siddata
       - PGDATA=/var/lib/postgresql/data/pgdata #see https://stackoverflow.com/a/61884120/5122790
+
   pgres_adminer:
     image: adminer
     restart: always
