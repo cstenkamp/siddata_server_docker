@@ -36,6 +36,9 @@ jobs:
       PYTHON: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2 # repo now available under $GITHUB_WORKSPACE
+      - uses: actions/checkout@v2
+      - name: Prepare directory
+        run: mkdir -p ./django_data/db/data;
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
