@@ -1,3 +1,11 @@
+if __name__ == "__main__":
+    import os
+
+    from django.core.wsgi import get_wsgi_application
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.development")
+    get_wsgi_application()
+
 import json
 import logging
 import os
@@ -92,8 +100,8 @@ class BertPredictor:
         label_probability_assoc = {}
         for entry in max_classes:
             none_found = True
-            for key in predictor.sparse_label_codes.keys():
-                if predictor.sparse_label_codes[key] == entry:
+            for key in self.sparse_label_codes.keys():
+                if self.sparse_label_codes[key] == entry:
                     computed_label = key
                     none_found = False
                     break
@@ -230,9 +238,7 @@ class BertBackbone:
 if __name__ == "__main__":
     # The way it's done here is only for testing/debugging, in production (and also if you're not explicitly testing
     # tf-models), there is a docker-container instead!!
-    import os
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.development")
     from contextlib import nullcontext
 
     from apps.backend.util.tf_model_server import TFModelServer

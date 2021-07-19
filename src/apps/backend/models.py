@@ -2,12 +2,11 @@ import datetime
 import logging
 import uuid
 
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import JSONField
 from languages.fields import LanguageField
-
-from siddata_server import settings
 
 
 class Origin(models.Model):

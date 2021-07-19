@@ -39,6 +39,16 @@ class TFModelServer:
                 raise subprocess.CalledProcessError(return_code, cmd)
 
     def _run_server_linux(self):
+        assert "siddata_tfserving_1" not in [
+            line.strip()
+            for line in self.execute(
+                "/usr/bin/env docker ps --format '{{.Names}}'",
+                env={"PATH": os.getenv("PATH")},
+                shell=True,
+                yield_stderr=False,
+            )
+        ], "You started the container already!"
+
         for line in self.execute(
             f"/usr/bin/env tensorflow_model_server --rest_api_port={self.port} --model_name={self.model_name} "
             f"--model_base_path={self.model_base_path}".split(" "),

@@ -6,6 +6,7 @@ django-extensions
 django-filter
 django-health-check
 django-import-export
+django-language-field
 djangorestframework
 markdown
 matplotlib
