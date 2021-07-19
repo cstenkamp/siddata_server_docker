@@ -5,7 +5,7 @@ from settings.settings_base import BASE_DIR
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(" ")
+ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].replace(","," ").split(" ")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

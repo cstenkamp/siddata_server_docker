@@ -11,7 +11,7 @@ ARG CODEDIR=/opt/siddata_backend/
 RUN echo $ALLOWED_HOSTS
 
 RUN apt-get update \
-    && apt-get install -y bash git vim curl zsh htop tmux unzip gcc libc-dev\
+    && apt-get install -y bash git vim curl zsh htop tmux unzip gcc libc-dev dos2unix \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,6 +26,7 @@ WORKDIR ${CODEDIR}
 #COPY src ${CODEDIR}
 COPY docker/scripts /scripts
 RUN chmod +x /scripts/*
+RUN dos2unix /scripts/entrypoint_dev.sh /scripts/entrypoint_prod.sh
 
 ENV PYTHONPATH=${CODEDIR}
 ENV RUNNING_IN_DOCKER=1

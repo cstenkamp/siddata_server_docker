@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # see https://dev.to/ashiqursuperfly/setting-up-django-app-dockerfile-dockerizing-django-for-deploying-anywhere-4mpc
 
