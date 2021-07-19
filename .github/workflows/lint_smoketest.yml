@@ -71,7 +71,9 @@ jobs:
             exit 1
           fi
       - name: Dump docker logs on failure
-#        if: failure()
+        if: failure()
+        uses: jwalton/gh-docker-logs@v1
+      - name: Dump docker logs on non-failure
         uses: jwalton/gh-docker-logs@v1
       - name: Smoketest
         run: docker run --network container:siddata_server_backend_1 appropriate/curl -s --retry 10 --retry-connrefused http://127.0.0.1:8000/health_check/
