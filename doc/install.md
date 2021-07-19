@@ -10,7 +10,7 @@ This file will guide you how to install this project in the following ways:
     * Using Linux
 3. Using Docker for productive settings on Linux
 
-**Note that if you're developing for this project, you still have to follow the instructions at doc/readme_developer.md!!**
+**Note that if you're developing for this project, you still have to follow the instructions at `doc/readme_developer.md`!!**
 
 ## Set up using Docker
 

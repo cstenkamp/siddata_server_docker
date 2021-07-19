@@ -51,3 +51,4 @@ Note that if your code needs to be reformatted, these pre-commit-hooks may chang
 
 
 * TODO: Explain how the settings-directory works
+* TODO: What do you need to run (tests) in order to know you set up everything completely and correctly
