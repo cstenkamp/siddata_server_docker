@@ -59,6 +59,8 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v2
+      - name: Prepare directory
+        run: mkdir -p ./django_data/db/data;
       - name: Build the Stack
         env:
           DJANGO_SETTINGS_MODULE: settings.cd_autotest
