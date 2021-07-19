@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import platform
 from datetime import date, datetime, timedelta
 from os.path import join
 
@@ -238,12 +237,10 @@ if __name__ == "__main__":
 
     from apps.backend.util.tf_model_server import TFModelServer
 
-    print(settings.TF_SERVING_HOST)
-
     goal = "Machine Learning"
     with (
         TFModelServer(8501, "rm_professions", model_base_path=settings.BASE_DIR / "data" / "RM_professions")
-        if settings.TF_SERVING_HOST == "localhost" and platform.system() != "Windows"
+        if settings.TF_SERVING_HOST == "localhost"
         else nullcontext()
     ):
         predictor = BertPredictor()

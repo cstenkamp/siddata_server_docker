@@ -135,10 +135,12 @@ DOCKER-VERSION
 NON-DOCKER (harder! Not recommended!!)
 Windows:
 ```
+#[in the root of the repo]
 conda create -n siddata_p3f python=3.9
 conda activate siddata_p3f
 pip install -r requirements-dev.txt
 pre-commit install
 pip install -r requirements.txt
 .\docker\scripts\entrypoint_dev.cmd (or manually migrating and then running manage.py runserver using pycharm)
+set PYTHONPATH=.\src #or on pycharm: click onto the "src"-direcotory -> "Mark Directory as" -> "Sources Root"
 ```
