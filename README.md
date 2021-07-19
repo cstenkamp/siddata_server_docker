@@ -16,7 +16,7 @@ Set up using Docker) manually on your computer. This way takes longer and is mor
 
 Next to the distinction of installing using Docker or not, another distinction is if you want to install *productively* or *for development*. If you want to set this up on a productive server, the settings and the way this Django-Project is invoked differ. In this project, different `docker-compose.yml`-files allow for setting this project up correctly both for developers and for productive serving, such that setting up this project on a fresh VM can be done using only a single command.
 
-**For the complete guide on how to install/set up this project, see `docs/install.md`**
+**For the complete guide on how to install/set up this project, see `doc/install.md`**
 
 
 ## Contributing
