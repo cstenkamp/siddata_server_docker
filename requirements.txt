@@ -1,5 +1,5 @@
 apscheduler
-Django>=3.2,<4.0
+Django>=3.1.8,<3.2
 django-apscheduler
 django-cors-headers
 django-extensions

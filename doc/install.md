@@ -54,7 +54,8 @@ Alternatively, if you're using PyCharm, you can also let Pycharm handle the cont
 On Linux, directories created inside containers are not owned by the host user, which is why all directories used in the containers need to be created before running the containers. For that, a shell-file is given that does so and needs to be run:
 
 ```
-./docker/docker_run_linux.sh
+cd docker
+./docker_run_linux.sh
 ```
 
 If anything goes wrong, you may have to remove the intermediate database by running `sudo rm -rf django_data/db`.
@@ -126,7 +127,8 @@ Note that for the latter variant, you have to manually perform migrations and th
 To run the backend, you can either run the same script that the container runs, which automatically migrates etc before running the server:
 
 ```
-./docker/scripts/entrypoint_dev.sh
+cd src
+../docker/scripts/entrypoint_dev.sh
 ```
 
 Or you can run `manage.py` manually:
@@ -154,5 +156,6 @@ ALLOWED_HOSTS=...
 
 and then simply run, from the base of this repo:
 ```
-./docker/docker_run_linux.sh -p
+cd docker
+./docker_run_linux.sh -p
 ```
