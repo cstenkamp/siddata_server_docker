@@ -5,6 +5,7 @@ services:
   sidb:
     container_name: siddata_server_db_1
     image: postgres:latest
+    #build: pgres #see https://stackoverflow.com/a/66502465/5122790
     volumes:
       - ../django_data/db:/var/lib/postgresql/
     ports:
@@ -13,7 +14,7 @@ services:
       - POSTGRES_DB=siddata
       - POSTGRES_USER=siddata
       - POSTGRES_PASSWORD=siddata
-      - PGDATA=/var/lib/postgresql/data/pgdata #see https://stackoverflow.com/a/61884120/5122790
+      - PGDATA=/var/lib/postgresql/data/pgdata #see https://stackoverflow.com/a/61884120/5122790 https://stackoverflow.com/a/66502465/5122790
 
   pgres_adminer:
     image: adminer
@@ -32,7 +33,8 @@ services:
     volumes:
       - ../src/:/opt/siddata_backend/
       - ../data/:/opt/data/
-      - ../django_data/:/opt/django_data/
+      - ../django_data/collected_static:/opt/django_data/collected_static
+      - ../django_data/media:/opt/django_data/media
     ports:
       - "8000:8000"
     depends_on:

@@ -14,9 +14,9 @@ In this project, we are using **black** as code formatter (and linter) as well a
 
 #### How to set up Linting Pre-Commit Hooks
 
-If you want to contribute, you can still run everything inside the docker-container as explained in the `doc/install.md`. However, we are using `pre-commit` with linting hooks, such as `black` and `flake8`. To set these up for your local development environment, you need to install at least the `requirements-dev.txt` outside of any container (on your **host OS**). For that, you should do the following:
+If you want to contribute, you can still run everything inside the docker-container as explained in the [doc/install.md](https://github.com/virtUOS/siddata_server/blob/master/doc/install.md). However, we are using `pre-commit` with linting hooks, such as `black` and `flake8`. To set these up for your local development environment, you need to install at least the `requirements-dev.txt` outside of any container (on your **host OS**). For that, you should do the following:
 
-If you didn't set up a conda environment before, follow the *download/install conda* section of the `doc/install.md` and create a new environment using `conda create -n siddata_p3f python=3.9`. Afterwards and in any case, run the following:
+If you didn't set up a conda environment before, follow the *download/install conda* section of the [doc/install.md](https://github.com/virtUOS/siddata_server/blob/master/doc/install.md) and create a new environment using `conda create -n siddata_p3f python=3.9`. Afterwards and in any case, `cd` to the root of this project and run the following:
 
 ```
 conda activate siddata_p3f
@@ -24,7 +24,7 @@ pip install -r requirements-dev.txt
 pre-commit install
 ```
 
-**Note that if your code needs to be reformatted (which will most likely be the case) these pre-commit-hooks will change your files on commit. If there were any changes by these hooks, the actual commit will be blocked, such that you may have to commit the files a second time!** (and, if the hooks noticed errors that it cannot automatically fix, fix the broken files manually).
+**Note that if your code needs to be reformatted (which will most likely be the case) these pre-commit-hooks will change your files on commit. If there were any changes by these hooks, the actual commit will be blocked, such that you may have to commit the files a second time!** (and, if the hooks noticed errors that it cannot automatically fix, you have to fix the broken files manually before being able to commit for real). Use `git status` to be sure that your files are commited.
 
 To run the linters manually, you can use the command
 ```
@@ -51,15 +51,17 @@ The other simple test that is performed automatically is a so-called **smoketest
 
 Settings can be found under `src/settings/`. Note that there are multiple files, among others `settings_base.py`, `development.py`, `cd_autotest.py` and `development.py`. So then, how precisely do these work?
 
-Most important is the `settings_base.py` file. This contains **all of the settings that must be equal for both production and development**. All other files in the `settings`-directory **import all settings from the `settings_base.py` and overwrite what the want to be different**.
+Most important is the `settings_base.py` file. This contains **all of the settings that must be equal for both production and development**. All other files in the `settings`-directory **import all settings from the `settings_base.py` and overwrite what needs to be different in their context**.
 
 If you are executing Django, for example by calling `manage.py runserver`, you can specify which settings-file you want to feed to the code using the environment-variable `DJANGO_SETTINGS_MODULE`. This is common practice for Django and really useful, because there are often settings that are supposed to be different for production and development (eg. the setting `DEBUG` should basically never be `True` for production, but always for development). To save oursaves the pain of writing those settings that are equal in both prod and dev (like eg. the language code of our project), we're simply using one file that contains all of these "global" settings, and then "inherit" these settings for different situations in which we want to use the code (namely production, development and automated testing in a ci/cd pipeline).
 
-This also means that if you are contributing and want to **add** a setting, you got to think about if there is any reason (eg. security or differences when running multithreaded) why your setting should be different in production and development, and if so put it (all of!) the respective files. If it doesn't matter (almost all other cases), you can just add your setting to `settings_base.py`... But please **keep in mind that all of these files are part of the repository and should not contain sensitive information**, like any passwords!
+This also means that if you are contributing and want to **add** a setting, you got to think about if there is any reason (eg. security or differences when running multithreaded) why your setting should be different in production and development, and if so put it into (all of!) the respective files. If it doesn't matter (almost all other cases), you can just add your setting to `settings_base.py`... But please **keep in mind that all of these files are part of the repository and should not contain sensitive information**, like any passwords!
 
 So how do you incorporate passwords, then? Please, pretty please, use **Environment-Files** for this. Environment-files are simple textual files ending in `.env`, that simply contain lines of key-value-pairs (`KEY=VALUE`). You can simply use the python-library [python-dotenv](https://pypi.org/project/python-dotenv/) to load these environment-files, or use Pycharm, or docker. Once you read these files in your code, you can just use `os.getenv("KEY")` to read their contents, and that can even be done in the settings-files.
 
 ### Misc
+
+To learn more about docker, have a look at [doc/howto_docker.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/howto_docker.md)!
 
 #### Importing files
 

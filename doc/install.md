@@ -10,11 +10,15 @@ This file will guide you how to install this project in the following ways:
     * Using Linux
 3. Using Docker for productive settings on Linux
 
-**Note that if you're developing for this project, you still have to follow the instructions at `doc/readme_developer.md`!!**
+**Note that if you're developing for this project, you still have to follow the instructions at [doc/readme_developer.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/readme_developer.md)!!**
 
 ## Set up using Docker
 
+To learn more about docker, have a look at [doc/howto_docker.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/howto_docker.md)!
+
 ### Installing Docker
+
+If you have installed Docker already (for example because you have installed the Frontend already), you can skip this step.
 
 #### Installing Docker on Windows
 * Install Docker Desktop for Windows (https://docs.docker.com/docker-for-windows/install). Installer is >500MB and installation requires a restart (and afterwards prompts to install https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi) - but just follow the instructions of the installer.
@@ -36,9 +40,9 @@ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 sudo apt-get install git -y
 ```
 
-### Setting up this project
+### Set up the actual project
 
-Note that depending on your OS you have to read the sub-section Windows/Linux, as well as the "All OS" sub-section!
+**Note that depending on your OS you have to read the sub-section Windows/Linux, as well as the "All OS" sub-section!**
 
 #### Windows
 
@@ -64,12 +68,12 @@ If anything goes wrong, you may have to remove the intermediate database by runn
 
 If you changed anything about the containers, make sure to delete them before re-running them, using `docker container rm siddata_server_backend_1 siddata_server_db_1 siddata_server_proxy_1`.
 
-Note again, that if you're developing for this project, even if you installed everything into a docker-container, you still have to follow certain requirements on your Host OS! Please consult `doc/readme_developer.md` for that!
+Note again, that if you're developing for this project, even if you installed everything into a docker-container, you still have to follow certain requirements on your Host OS! Please consult [doc/readme_developer.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/readme_developer.md) for that!
 
 
 ## Set up without using Docker
 
-If you don't want to run everything in docker, you can still set up everything manually. For that, you have to install `conda` and `postgresql`.  Note that this installation-process is harder, takes longer and is more error-prone, so it is only recommended if you know what you're doing!
+If you don't want to run everything in Docker, you can still set up everything manually. For that, you have to install `conda` and `postgresql`.  Note that this installation-process is harder, takes longer and is more error-prone, so it is only recommended if you know what you're doing!
 
 ### Installing conda and postgresql
 
@@ -101,7 +105,7 @@ conda activate siddata_p3f
 pip install -r requirements.txt
 ```
 
-This will set up the basic requirements. **Note that if you're developing for this project, you still have to follow the instructions at `doc/readme_developer.md`!!**
+This will set up the basic requirements. **Note that if you're developing for this project, you still have to follow the instructions at [doc/readme_developer.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/readme_developer.md)!!**
 
 ### Run the project
 
@@ -151,7 +155,7 @@ To run productively, you don't need anything installed on the machine you're usi
 ```
 ALLOWED_HOSTS=...
 ```
-(for local prod-testing "ALLOWED_HOSTS=localhost" should even be enough)
+(for local prod-testing `ALLOWED_HOSTS=localhost` should even be enough)
 
 
 and then simply run, from the base of this repo:
