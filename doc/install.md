@@ -62,6 +62,8 @@ cd docker
 ./docker_run_linux.sh
 ```
 
+If you're not starting this project for the first time and there is no need to re-build the containers (if you only changed code files), you can also just run `docker-compose up` instead of `docker_run_linux.sh`.
+
 If anything goes wrong, you may have to remove the intermediate database by running `sudo rm -rf django_data/db`.
 
 #### All OS
