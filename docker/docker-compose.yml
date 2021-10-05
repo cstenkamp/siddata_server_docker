@@ -18,7 +18,7 @@ services:
 
   pgres_adminer:
     image: adminer
-    restart: always
+    restart: unless-stopped
     ports:
       - "8080:8080"
 
@@ -33,15 +33,16 @@ services:
     volumes:
       - ../src/:/opt/siddata_backend/
       - ../data/:/opt/data/
-      - ../django_data/collected_static:/opt/django_data/collected_static
-      - ../django_data/media:/opt/django_data/media
+      - ../django_data/:/opt/django_data/
+      #- ../django_data/collected_static:/opt/django_data/collected_static
+      #- ../django_data/media:/opt/django_data/media
     ports:
       - "8000:8000"
     depends_on:
       - sidb
     environment:
      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-settings.development}
-    restart: always
+    restart: unless-stopped
     command: entrypoint_dev.sh
 
   tf_serving:
