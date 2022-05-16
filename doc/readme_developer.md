@@ -14,9 +14,9 @@ In this project, we are using **black** as code formatter (and linter) as well a
 
 #### How to set up Linting Pre-Commit Hooks
 
-If you want to contribute, you can still run everything inside the docker-container as explained in the [doc/install.md](https://github.com/virtUOS/siddata_server/blob/master/doc/install.md). However, we are using `pre-commit` with linting hooks, such as `black` and `flake8`. To set these up for your local development environment, you need to install at least the `requirements-dev.txt` outside of any container (on your **host OS**). For that, you should do the following:
+If you want to contribute, you can still run everything inside the docker-container as explained in the [doc/install.md](https://github.com/cstenkamp/siddata_server_docker/blob/master/doc/install.md). However, we are using `pre-commit` with linting hooks, such as `black` and `flake8`. To set these up for your local development environment, you need to install at least the `requirements-dev.txt` outside of any container (on your **host OS**). For that, you should do the following:
 
-If you didn't set up a conda environment before, follow the *download/install conda* section of the [doc/install.md](https://github.com/virtUOS/siddata_server/blob/master/doc/install.md) and create a new environment using `conda create -n siddata_p3f python=3.9`. Afterwards and in any case, `cd` to the root of this project and run the following:
+If you didn't set up a conda environment before, follow the *download/install conda* section of the [doc/install.md](https://github.com/cstenkamp/siddata_server_docker/blob/master/doc/install.md) and create a new environment using `conda create -n siddata_p3f python=3.9`. Afterwards and in any case, `cd` to the root of this project and run the following:
 
 ```
 conda activate siddata_p3f
@@ -42,7 +42,7 @@ CI/CD stands for Continouous Integration/Continuous Deployment, and the exact di
 
 In our case we use CI/CD for automated testing: Whenever you commit your code to the repository, the *workflow* under `.github/workflows` is automatically executed and creates a container. While this container is not pushed to any container-repository, it is used to **test the code** and create a report if the tests failed or passed. As explained in the section above, one part of this testing is **linting**. If you used the pre-commit hooks, the linting-tests should pass without problems, and if they fail please make sure to re-run `pre-commit run --all-files`.
 
-The other simple test that is performed automatically is a so-called **smoketest**. This test just tries to spin up the Django-Environment using `manage.py runserver` inside the specified container and checks if it doesn't die. If it doesn't, it additionally looks at the health-check at `localhost:8000/health_check/`, to see if there are any problems with migrations and the like. If you don't see a green tick a few minutes after your commit, please make sure to check under the **Actions** Tab at https://github.com/virtUOS/siddata_server/actions to see what went wrong with your commit and fix it.
+The other simple test that is performed automatically is a so-called **smoketest**. This test just tries to spin up the Django-Environment using `manage.py runserver` inside the specified container and checks if it doesn't die. If it doesn't, it additionally looks at the health-check at `localhost:8000/health_check/`, to see if there are any problems with migrations and the like. If you don't see a green tick a few minutes after your commit, please make sure to check under the **Actions** Tab at https://github.com/cstenkamp/siddata_server_docker/actions to see what went wrong with your commit and fix it.
 
 
 ## Further code requirements and information
@@ -61,7 +61,7 @@ So how do you incorporate passwords, then? Please, pretty please, use **Environm
 
 ### Misc
 
-To learn more about docker, have a look at [doc/howto_docker.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/howto_docker.md)!
+To learn more about docker, have a look at [doc/howto_docker.md](https://github.com/cstenkamp/siddata_server_docker/blob/develop/doc/howto_docker.md)!
 
 #### Importing files
 

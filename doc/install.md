@@ -10,11 +10,11 @@ This file will guide you how to install this project in the following ways:
     * Using Linux
 3. Using Docker for productive settings on Linux
 
-**Note that if you're developing for this project, you still have to follow the instructions at [doc/readme_developer.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/readme_developer.md)!!**
+**Note that if you're developing for this project, you still have to follow the instructions at [doc/readme_developer.md](https://github.com/cstenkamp/siddata_server_docker/blob/develop/doc/readme_developer.md)!!**
 
 ## Set up using Docker
 
-To learn more about docker, have a look at [doc/howto_docker.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/howto_docker.md)!
+To learn more about docker, have a look at [doc/howto_docker.md](https://github.com/cstenkamp/siddata_server_docker/blob/develop/doc/howto_docker.md)!
 
 ### Installing Docker
 
@@ -70,7 +70,7 @@ If anything goes wrong, you may have to remove the intermediate database by runn
 
 If you changed anything about the containers, make sure to delete them before re-running them, using `docker container rm siddata_server_backend_1 siddata_server_db_1 siddata_server_proxy_1`.
 
-Note again, that if you're developing for this project, even if you installed everything into a docker-container, you still have to follow certain requirements on your Host OS! Please consult [doc/readme_developer.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/readme_developer.md) for that!
+Note again, that if you're developing for this project, even if you installed everything into a docker-container, you still have to follow certain requirements on your Host OS! Please consult [doc/readme_developer.md](https://github.com/cstenkamp/siddata_server_docker/blob/develop/doc/readme_developer.md) for that!
 
 
 ## Set up without using Docker
@@ -107,7 +107,7 @@ conda activate siddata_p3f
 pip install -r requirements.txt
 ```
 
-This will set up the basic requirements. **Note that if you're developing for this project, you still have to follow the instructions at [doc/readme_developer.md](https://github.com/virtUOS/siddata_server/blob/develop/doc/readme_developer.md)!!**
+This will set up the basic requirements. **Note that if you're developing for this project, you still have to follow the instructions at [doc/readme_developer.md](https://github.com/cstenkamp/siddata_server_docker/blob/develop/doc/readme_developer.md)!!**
 
 ### Run the project
 
